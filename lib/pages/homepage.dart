@@ -89,18 +89,22 @@ class HomePage extends StatelessWidget {
                             ),
                           ),
                           onPressed: () {
-                            Get.toNamed('/tambahTransaksi');
+                            Get.toNamed('/transaction');
                           },
-                          icon: Icon(Icons.add, size: 18),
-                          label: Text('Baru saja melakukan transaksi?'),
+                          label: Text(
+                            'Baru saja melakukan transaksi?',
+                            style: TextStyle(
+                                fontSize: 14,
+                                fontFamily: 'poppins',
+                                color: Colors.white),
+                          ),
+                          icon: Icon(Icons.add, size: 18,color: Colors.white,),
                         ),
                       ],
                     ),
                   ),
-
-                  // Tambahan konten di bawah sini
                   SizedBox(height: 20),
-                  // Misal: Daftar pengeluaran, komentar, dll
+                  //
                 ],
               ),
             ),
@@ -110,11 +114,15 @@ class HomePage extends StatelessWidget {
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: 1,
         onTap: (index) {
-          // Get.toNamed() bisa kamu tambah di sini
+          Get.toNamed(index == 0
+              ? '/settings'
+              : index == 1
+                  ? '/home'
+                  : '/transaction');
         },
         items: [
           BottomNavigationBarItem(
-           icon: Image.asset('assets/icons/settings.png', width: 24),
+            icon: Image.asset('assets/icons/settings.png', width: 24),
             label: 'Pengaturan',
           ),
           BottomNavigationBarItem(

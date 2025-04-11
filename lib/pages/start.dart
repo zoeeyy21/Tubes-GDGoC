@@ -12,7 +12,7 @@ class _StartPageState extends State<StartPage> {
   void initState() {
     super.initState();
     Future.delayed(Duration(seconds: 3), () {
-      Get.offNamed(AppRoutes.home); 
+      Get.offNamed(AppRoutes.login); 
     });
   }
 

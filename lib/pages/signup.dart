@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../routes.dart';
 
-class LoginPage extends StatelessWidget {
+class SignUp extends StatelessWidget {
   final TextEditingController usernameController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
 
@@ -53,7 +53,7 @@ class LoginPage extends StatelessWidget {
                           ),
                           SizedBox(height: 4),
                           Text(
-                            'Masuk',
+                            'Buat Akun',
                             style: TextStyle(
                               fontFamily: 'Poppins',
                               fontSize: 16,
@@ -90,13 +90,13 @@ class LoginPage extends StatelessWidget {
                       style: const TextStyle(color: Colors.black),
                       textAlign: TextAlign.center,
                       decoration: InputDecoration(
-                        filled: true,
-                        fillColor: Colors.white,
-                        hintText: 'kata sandi',
                         hintStyle: TextStyle(
                           fontFamily: 'poppins',
                           fontSize: 14,
                         ),
+                        filled: true,
+                        fillColor: Colors.white,
+                        hintText: 'kata sandi',
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(30),
                           borderSide: BorderSide.none,
@@ -116,7 +116,7 @@ class LoginPage extends StatelessWidget {
                         ),
                       ),
                       child: const Text(
-                        'Masuk',
+                        'Buat Akun',
                         style: TextStyle(
                           color: Colors.white,
                           fontFamily: 'Poppins',
@@ -129,7 +129,7 @@ class LoginPage extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         const Text(
-                          'belum punya akun? ',
+                          'sudah punya akun? ',
                           style: TextStyle(
                             color: Color(0xB3FFFFFF),
                             fontFamily: 'poppins',
@@ -137,7 +137,7 @@ class LoginPage extends StatelessWidget {
                         ),
                         TextButton(
                           onPressed: () {
-                            Get.toNamed(AppRoutes.signup);
+                            Get.toNamed(AppRoutes.login);
                           },
                           style: TextButton.styleFrom(
                             padding: EdgeInsets.zero,
