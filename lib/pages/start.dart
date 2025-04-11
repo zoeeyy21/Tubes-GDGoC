@@ -33,7 +33,7 @@ class _StartPageState extends State<StartPage> {
             style: TextStyle(
               fontFamily: 'poppins',
               fontSize: 24,
-              fontWeight: FontWeight.bold,
+              fontWeight: FontWeight.w800,
               color: Colors.white,
             ),
           ),
