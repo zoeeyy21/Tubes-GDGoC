@@ -17,7 +17,6 @@ class AppRoutes {
   static final routes = [
     GetPage(name: start, page: () => StartPage()),
     GetPage(name: login, page: () => LoginPage()),
-    GetPage(name: signup, page:() => SignUp()),
     GetPage(name: home, page: () => HomePage()),
   ];
 }
