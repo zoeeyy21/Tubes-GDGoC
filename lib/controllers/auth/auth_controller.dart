@@ -104,18 +104,40 @@ class AuthController extends GetxController {
       print("Login failed for $email: ${e.toString()}");
       authState.value = AuthState.Error;
 
+      // Menangani berbagai jenis error Firebase Auth
+      String errorMessage = 'Login gagal. Silakan coba lagi.';
+
+      if (e.toString().contains('user-not-found')) {
+        errorMessage =
+            'Email tidak terdaftar. Silakan buat akun terlebih dahulu.';
+      } else if (e.toString().contains('wrong-password')) {
+        errorMessage = 'Password salah. Coba lagi.';
+      } else if (e.toString().contains('invalid-email')) {
+        errorMessage = 'Format email tidak valid.';
+      } else if (e.toString().contains('user-disabled')) {
+        errorMessage = 'Akun ini telah dinonaktifkan. Hubungi admin.';
+      } else if (e.toString().contains('network-request-failed')) {
+        errorMessage = 'Koneksi internet terputus. Periksa koneksi Anda.';
+      } else if (e.toString().contains('too-many-requests')) {
+        errorMessage = 'Terlalu banyak percobaan login. Coba lagi nanti.';
+      }
+
+      // Menampilkan error dengan Snackbar
       WidgetsBinding.instance.addPostFrameCallback((_) {
         Get.snackbar(
-          'Login Error',
-          'Login failed. Please check your credentials.',
+          'Login Gagal',
+          errorMessage,
           snackPosition: SnackPosition.BOTTOM,
           backgroundColor: Colors.red,
           colorText: Colors.white,
+          margin: EdgeInsets.all(16),
+          borderRadius: 10,
+          duration: Duration(seconds: 4),
         );
       });
 
-      _updateAuthState(
-          null); // Akan set ke Unauthenticated dan memastikan di halaman login
+      // Reset state ke Unauthenticated
+      authState.value = AuthState.Unauthenticated;
     }
   }
 
@@ -140,42 +162,85 @@ class AuthController extends GetxController {
         _onAuthStateChanged(_authService.getCurrentUser());
       } else {
         print("Warning: User is null after registration");
+        authState.value = AuthState.Unauthenticated;
       }
-
-      // Listener _onAuthStateChanged akan menangani navigasi setelah user dibuat
     } catch (e) {
       print("Registration failed for $email: ${e.toString()}");
-      authState.value = AuthState.Error;
+      authState.value = AuthState.Unauthenticated;
 
+      String errorMessage = 'Pendaftaran gagal. Silakan coba lagi.';
+
+      // Menerjemahkan pesan error dari Firebase
+      if (e.toString().contains('email-already-in-use')) {
+        errorMessage = 'Email sudah digunakan. Silakan gunakan email lain.';
+      } else if (e.toString().contains('invalid-email')) {
+        errorMessage = 'Format email tidak valid.';
+      } else if (e.toString().contains('weak-password')) {
+        errorMessage = 'Password terlalu lemah. Gunakan minimal 6 karakter.';
+      } else if (e.toString().contains('network-request-failed')) {
+        errorMessage = 'Koneksi internet terputus. Periksa koneksi Anda.';
+      }
+
+      // Tampilkan error dengan GetX snackbar
       WidgetsBinding.instance.addPostFrameCallback((_) {
         Get.snackbar(
-          'Registration Error',
-          'Registration failed. ${e.toString()}',
+          'Pendaftaran Gagal',
+          errorMessage,
           snackPosition: SnackPosition.BOTTOM,
           backgroundColor: Colors.red,
           colorText: Colors.white,
+          margin: EdgeInsets.all(16),
+          borderRadius: 10,
+          duration: Duration(seconds: 4),
         );
       });
-
-      _updateAuthState(null);
     }
   }
 
   Future<void> logout() async {
     print("Attempting logout...");
     try {
+      // Set state dulu ke Unauthenticated sebelum menjalankan aksi logout
+      authState.value = AuthState.Unauthenticated;
+
+      // Kosongkan user data sebelum signout
+      currentUser.value = null;
+
+      // Panggil signOut di service
       await _authService.signOut();
       print("Logout service call successful.");
+
+      // Tambahkan delay kecil untuk memastikan state terupdate
+      await Future.delayed(Duration(milliseconds: 100));
+
+      // Navigasi ke login dengan post-frame callback
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        Get.offAllNamed(AppRoutes.login);
+      });
     } catch (e) {
       print("Logout Error: ${e.toString()}");
-      Get.snackbar(
-        'Logout Error',
-        'Could not log out. ${e.toString()}',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-      );
-      _updateAuthState(_authService.getCurrentUser());
+      // Pastikan UI tetap responsif bahkan jika error
+      authState.value = AuthState.Error;
+
+      // Tampilkan error
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        Get.snackbar(
+          'Logout Error',
+          'Could not log out. Please try again.',
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.red,
+          colorText: Colors.white,
+        );
+      });
+
+      // Cek user status untuk recovery
+      User? currentUserCheck = _authService.getCurrentUser();
+      if (currentUserCheck != null) {
+        authState.value = AuthState.Authenticated;
+        currentUser.value = currentUserCheck;
+      } else {
+        authState.value = AuthState.Unauthenticated;
+      }
     }
   }
 }

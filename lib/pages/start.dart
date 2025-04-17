@@ -3,6 +3,8 @@ import 'package:get/get.dart';
 import '../routes.dart';
 
 class StartPage extends StatefulWidget {
+  const StartPage({super.key});
+
   @override
   _StartPageState createState() => _StartPageState();
 }

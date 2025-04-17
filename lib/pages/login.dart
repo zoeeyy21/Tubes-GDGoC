@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../routes.dart';
+import '../../routes.dart';
+import 'package:ewallet/controllers/auth/auth_controller.dart';
+import 'package:ewallet/models/enum.dart';
 
 class LoginPage extends StatelessWidget {
-  final TextEditingController usernameController = TextEditingController();
+  final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
+  final AuthController authController = Get.find<AuthController>();
+  LoginPage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -30,13 +34,16 @@ class LoginPage extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Back button
                     IconButton(
                       onPressed: () {
-                        Get.back();
+                        Get.toNamed(AppRoutes.home);
                       },
-                      icon: Image.asset('assets/icons/angle-small-right.png',
-                          width: 30, height: 30),
+                      icon: Image.asset(
+                        'assets/icons/angle-small-right.png',
+                        width: 30,
+                        height: 30,
+                        color: Colors.white,
+                      ),
                     ),
                     const SizedBox(height: 40),
                     Center(
@@ -66,17 +73,18 @@ class LoginPage extends StatelessWidget {
                     ),
                     const SizedBox(height: 140),
                     TextField(
-                      controller: usernameController,
+                      controller: emailController,
+                      keyboardType: TextInputType.emailAddress,
                       style: const TextStyle(color: Colors.black),
                       textAlign: TextAlign.center,
                       decoration: InputDecoration(
-                        hintStyle: TextStyle(
+                        hintStyle: const TextStyle(
                           fontFamily: 'poppins',
                           fontSize: 14,
                         ),
                         filled: true,
                         fillColor: Colors.white,
-                        hintText: 'nama pengguna',
+                        hintText: 'email',
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(30),
                           borderSide: BorderSide.none,
@@ -93,7 +101,7 @@ class LoginPage extends StatelessWidget {
                         filled: true,
                         fillColor: Colors.white,
                         hintText: 'kata sandi',
-                        hintStyle: TextStyle(
+                        hintStyle: const TextStyle(
                           fontFamily: 'poppins',
                           fontSize: 14,
                         ),
@@ -104,27 +112,57 @@ class LoginPage extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 24),
-                    ElevatedButton(
-                      onPressed: () {
-                        Get.offNamed(AppRoutes.home);
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF002F91),
-                        minimumSize: const Size(double.infinity, 50),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(30),
-                        ),
-                      ),
-                      child: const Text(
-                        'Masuk',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontFamily: 'Poppins',
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ),
+
+                    // --- Tombol Login dengan Integrasi Auth dan Obx ---
+                    Obx(() => ElevatedButton(
+                          // Logika onPressed untuk memanggil controller & handle state
+                          onPressed: authController.authState.value ==
+                                  AuthState.Loading
+                              ? null // Nonaktifkan saat loading
+                              : () {
+                                  final email = emailController.text.trim();
+                                  final password =
+                                      passwordController.text.trim();
+                                  if (email.isEmpty || password.isEmpty) {
+                                    Get.snackbar(
+                                      'Error',
+                                      'Email dan kata sandi tidak boleh kosong',
+                                      snackPosition: SnackPosition.BOTTOM,
+                                    );
+                                  } else {
+                                    authController.login(email, password);
+                                  }
+                                },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFF002F91),
+                            minimumSize: const Size(double.infinity, 50),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(30),
+                            ),
+                            disabledBackgroundColor:
+                                const Color(0xFF002F91).withOpacity(0.6),
+                          ),
+                          child: authController.authState.value ==
+                                  AuthState.Loading
+                              ? const SizedBox(
+                                  // Tampilkan loading indicator
+                                  height: 24,
+                                  width: 24,
+                                  child: CircularProgressIndicator(
+                                    color: Colors.white,
+                                    strokeWidth: 3,
+                                  ),
+                                )
+                              : const Text(
+                                  'Masuk',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontFamily: 'Poppins',
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                        )),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [

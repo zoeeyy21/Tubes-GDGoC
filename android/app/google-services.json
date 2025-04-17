@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "750331939273",
+    "project_id": "tubes-gdgoc-16642",
+    "storage_bucket": "tubes-gdgoc-16642.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:750331939273:android:bd7bd84bc7127083c2c018",
+        "android_client_info": {
+          "package_name": "com.example.ewallet"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCrGkmAvyMthBTaC3fGBJ8G4O4kynLDJmg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
