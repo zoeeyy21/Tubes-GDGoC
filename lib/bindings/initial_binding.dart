@@ -2,6 +2,7 @@ import 'package:get/get.dart';
 import '../controllers/auth/auth_controller.dart';
 import '../services/auth_service.dart';
 import '../controllers/controller.dart'; // Import controller pengeluaran
+import '../controllers/transactionController.dart';
 
 class InitialBinding extends Bindings {
   @override
@@ -14,6 +15,11 @@ class InitialBinding extends Bindings {
     // Controller Dependencies
     if (!Get.isRegistered<AuthController>()) {
       Get.put(AuthController(Get.find<AuthService>()), permanent: true);
+    }
+
+    // Register TransactionController
+    if (!Get.isRegistered<TransactionController>()) {
+      Get.put(TransactionController(), permanent: true);
     }
 
     // Register other controllers (Pengeluaran, etc.)
