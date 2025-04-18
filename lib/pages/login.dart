@@ -123,15 +123,39 @@ class LoginPage extends StatelessWidget {
                                   final email = emailController.text.trim();
                                   final password =
                                       passwordController.text.trim();
+
+                                  // Validasi basic di UI
                                   if (email.isEmpty || password.isEmpty) {
                                     Get.snackbar(
                                       'Error',
                                       'Email dan kata sandi tidak boleh kosong',
                                       snackPosition: SnackPosition.BOTTOM,
+                                      backgroundColor: Colors.red,
+                                      colorText: Colors.white,
+                                      margin: EdgeInsets.all(16),
+                                      borderRadius: 10,
                                     );
-                                  } else {
-                                    authController.login(email, password);
+                                    return;
                                   }
+
+                                  // Validasi format email
+                                  final emailRegex = RegExp(
+                                      r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
+                                  if (!emailRegex.hasMatch(email)) {
+                                    Get.snackbar(
+                                      'Format Email Salah',
+                                      'Masukkan alamat email yang valid',
+                                      snackPosition: SnackPosition.BOTTOM,
+                                      backgroundColor: Colors.red,
+                                      colorText: Colors.white,
+                                      margin: EdgeInsets.all(16),
+                                      borderRadius: 10,
+                                    );
+                                    return;
+                                  }
+
+                                  // Jika validasi lulus, lakukan login
+                                  authController.login(email, password);
                                 },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: const Color(0xFF002F91),

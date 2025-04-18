@@ -92,19 +92,20 @@ class AuthController extends GetxController {
     try {
       await _authService.signInWithEmailAndPassword(email, password);
       print("Login service call successful for: $email");
-      print(
-          "Current user after login: ${_authService.getCurrentUser()?.uid ?? 'null'}");
 
       User? user = _authService.getCurrentUser();
       if (user != null) {
         print("Manually triggering auth state update after confirmed login");
         _onAuthStateChanged(user);
+      } else {
+        throw Exception("User is null after successful login");
       }
     } catch (e) {
       print("Login failed for $email: ${e.toString()}");
-      authState.value = AuthState.Error;
 
-      // Menangani berbagai jenis error Firebase Auth
+      // Set status kembali ke Unauthenticated
+      authState.value = AuthState.Unauthenticated;
+
       String errorMessage = 'Login gagal. Silakan coba lagi.';
 
       if (e.toString().contains('user-not-found')) {
@@ -122,7 +123,6 @@ class AuthController extends GetxController {
         errorMessage = 'Terlalu banyak percobaan login. Coba lagi nanti.';
       }
 
-      // Menampilkan error dengan Snackbar
       WidgetsBinding.instance.addPostFrameCallback((_) {
         Get.snackbar(
           'Login Gagal',
@@ -132,12 +132,9 @@ class AuthController extends GetxController {
           colorText: Colors.white,
           margin: EdgeInsets.all(16),
           borderRadius: 10,
-          duration: Duration(seconds: 4),
+          duration: Duration(seconds: 3),
         );
       });
-
-      // Reset state ke Unauthenticated
-      authState.value = AuthState.Unauthenticated;
     }
   }
 
