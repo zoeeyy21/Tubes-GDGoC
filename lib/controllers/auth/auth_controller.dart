@@ -5,6 +5,7 @@ import 'package:ewallet/services/auth_service.dart';
 import 'package:ewallet/models/user.dart';
 import 'package:ewallet/models/enum.dart';
 import 'package:ewallet/routes.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthController extends GetxController {
   final AuthService _authService;
@@ -13,10 +14,12 @@ class AuthController extends GetxController {
   final Rx<User?> currentUser = Rx<User?>(null);
   final Rx<AuthState> authState = AuthState.Unauthenticated.obs;
   StreamSubscription? _authSubscription;
+  final RxString lastUserId = ''.obs;
 
   @override
   void onInit() {
     super.onInit();
+    _loadLastUserId();
     print("AuthController onInit: Initializing...");
 
     // Periksa status auth saat ini sebelum mendengarkan perubahan
@@ -43,9 +46,22 @@ class AuthController extends GetxController {
     super.onClose();
   }
 
+  Future<void> _loadLastUserId() async {
+    final prefs = await SharedPreferences.getInstance();
+    lastUserId.value = prefs.getString('lastUserId') ?? '';
+  }
+
+  Future<void> saveLastUserId(String userId) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('lastUserId', userId);
+    lastUserId.value = userId;
+  }
+
+  // Call this after successful login
   void _updateAuthState(User? user) {
     currentUser.value = user;
     if (user != null) {
+      saveLastUserId(user.uid);
       // Jika ada user -> Authenticated
       if (authState.value != AuthState.Authenticated) {
         print("Updating state to Authenticated for user: ${user.uid}");
