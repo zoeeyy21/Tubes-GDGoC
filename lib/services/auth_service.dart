@@ -25,7 +25,8 @@ class AuthService {
       return _mapFirebaseUser(userCredential.user);
     } catch (e) {
       print("Error signing in: $e");
-      return null;
+      // Re-throw exception agar dapat ditangkap oleh controller
+      throw e;
     }
   }
 
@@ -48,10 +49,10 @@ class AuthService {
     try {
       // Kirim event null ke stream sebelum sign out
       _authStateController.add(null);
-      
+
       // Tunggu hingga Firebase selesai sign out
       await _auth.signOut();
-      
+
       print("Logout service call successful.");
     } catch (e) {
       print("Error during signOut: $e");

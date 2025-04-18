@@ -4,6 +4,7 @@ import '../controllers/controller.dart';
 import '../widgets/widget.dart';
 import '../controllers/auth/auth_controller.dart';
 import '../routes.dart';
+import 'package:ewallet/models/enum.dart';
 
 class HomePage extends StatelessWidget {
   final pengeluaranController = Get.put(ControllerPengeluaran());
@@ -47,34 +48,48 @@ class HomePage extends StatelessWidget {
                             fontWeight: FontWeight.w800,
                           )),
                       // untuk test fitur aja
-                      // Tombol Logout
-                      IconButton(
-                        icon: Icon(Icons.logout, color: Colors.white),
-                        onPressed: () {
-                          // Konfirmasi sebelum logout
-                          Get.dialog(
-                            AlertDialog(
-                              title: Text('Logout'),
-                              content: Text('Apakah Anda yakin ingin keluar?'),
-                              actions: [
-                                TextButton(
-                                  onPressed: () => Get.back(),
-                                  child: Text('Batal'),
+                      // Tombol Logout/Login
+                      Obx(() {
+                        if (authController.authState.value ==
+                            AuthState.Authenticated) {
+                          return IconButton(
+                            icon: Icon(Icons.logout, color: Colors.white),
+                            onPressed: () {
+                              // Konfirmasi sebelum logout
+                              Get.dialog(
+                                AlertDialog(
+                                  title: Text('Logout'),
+                                  content:
+                                      Text('Apakah Anda yakin ingin keluar?'),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () => Get.back(),
+                                      child: Text('Batal'),
+                                    ),
+                                    TextButton(
+                                      onPressed: () {
+                                        Get.toNamed(
+                                            AppRoutes.home); // Tutup dialog
+                                        authController
+                                            .logout(); // Panggil metode logout
+                                      },
+                                      child: Text('Ya',
+                                          style: TextStyle(color: Colors.red)),
+                                    ),
+                                  ],
                                 ),
-                                TextButton(
-                                  onPressed: () {
-                                    Get.back(); // Tutup dialog
-                                    authController
-                                        .logout(); // Panggil metode logout
-                                  },
-                                  child: Text('Ya',
-                                      style: TextStyle(color: Colors.red)),
-                                ),
-                              ],
-                            ),
+                              );
+                            },
                           );
-                        },
-                      ),
+                        } else {
+                          return IconButton(
+                            icon: Icon(Icons.login, color: Colors.white),
+                            onPressed: () {
+                              Get.toNamed(AppRoutes.login);
+                            },
+                          );
+                        }
+                      })
                     ],
                   ),
                   SizedBox(height: 10),
@@ -83,7 +98,9 @@ class HomePage extends StatelessWidget {
                     final userName =
                         authController.currentUser.value?.displayName;
                     return Text(
-                        userName != null ? 'Welcome $userName' : 'Welcome Guest!',
+                        userName != null
+                            ? 'Welcome $userName!'
+                            : 'Welcome Guest!',
                         style: TextStyle(
                           color: Colors.white,
                           fontSize: 20,
