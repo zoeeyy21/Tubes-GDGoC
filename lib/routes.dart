@@ -12,7 +12,7 @@ class AppRoutes {
   static const home = '/home';
   static const login = '/login';
   static const signup = '/signup';
-  static const settings = '/settings';
+  static const settings = '/pengaturan';
   static const transaction = '/transaction';
   static const String addTransaction = '/add-transaction';
 
