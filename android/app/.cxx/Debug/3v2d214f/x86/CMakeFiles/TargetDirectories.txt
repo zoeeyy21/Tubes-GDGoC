@@ -1,0 +1,2 @@
+/Users/farhanlhsn/Documents/FARHAN'S DATA/Telkom University/2025/TUBES_GDGoC/Tubes-GDGoC/android/app/.cxx/Debug/3v2d214f/x86/CMakeFiles/edit_cache.dir
+/Users/farhanlhsn/Documents/FARHAN'S DATA/Telkom University/2025/TUBES_GDGoC/Tubes-GDGoC/android/app/.cxx/Debug/3v2d214f/x86/CMakeFiles/rebuild_cache.dir

@@ -2,9 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../controllers/controller.dart';
 import '../widgets/widget.dart';
+import '../controllers/auth/auth_controller.dart';
+import '../routes.dart';
+import 'package:ewallet/models/enum.dart';
 
 class HomePage extends StatelessWidget {
   final pengeluaranController = Get.put(ControllerPengeluaran());
+  final authController =
+      Get.find<AuthController>(); // Dapatkan instance AuthController
 
   @override
   Widget build(BuildContext context) {
@@ -32,20 +37,76 @@ class HomePage extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   SizedBox(height: 20),
-                  Text('E-Wallet',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 17,
-                        fontFamily: 'poppins',
-                        fontWeight: FontWeight.w800,
-                      )),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text('E-Wallet',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 17,
+                            fontFamily: 'poppins',
+                            fontWeight: FontWeight.w800,
+                          )),
+                      // untuk test fitur aja
+                      // Tombol Logout/Login
+                      Obx(() {
+                        if (authController.authState.value ==
+                            AuthState.Authenticated) {
+                          return IconButton(
+                            icon: Icon(Icons.logout, color: Colors.white),
+                            onPressed: () {
+                              // Konfirmasi sebelum logout
+                              Get.dialog(
+                                AlertDialog(
+                                  title: Text('Logout'),
+                                  content:
+                                      Text('Apakah Anda yakin ingin keluar?'),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () => Get.back(),
+                                      child: Text('Batal'),
+                                    ),
+                                    TextButton(
+                                      onPressed: () {
+                                        Get.toNamed(
+                                            AppRoutes.home); // Tutup dialog
+                                        authController
+                                            .logout(); // Panggil metode logout
+                                      },
+                                      child: Text('Ya',
+                                          style: TextStyle(color: Colors.red)),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            },
+                          );
+                        } else {
+                          return IconButton(
+                            icon: Icon(Icons.login, color: Colors.white),
+                            onPressed: () {
+                              Get.toNamed(AppRoutes.login);
+                            },
+                          );
+                        }
+                      })
+                    ],
+                  ),
                   SizedBox(height: 10),
-                  Text('Welcome User',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 20,
-                        fontFamily: 'poppins',
-                      )),
+                  // Nama user sekarang akan menggunakan data dari AuthController
+                  Obx(() {
+                    final userName =
+                        authController.currentUser.value?.displayName;
+                    return Text(
+                        userName != null
+                            ? 'Welcome $userName!'
+                            : 'Welcome Guest!',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 20,
+                          fontFamily: 'poppins',
+                        ));
+                  }),
                   SizedBox(height: 20),
 
                   // BAGIAN CARD PUTIH

@@ -18,5 +18,7 @@ class AppRoutes {
     GetPage(name: start, page: () => StartPage()),
     GetPage(name: login, page: () => LoginPage()),
     GetPage(name: home, page: () => HomePage()),
+    GetPage(name: transaction, page: () => TransaksiPage()),
+    GetPage(name: signup, page: () => SignUp()),
   ];
 }

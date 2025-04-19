@@ -1,0 +1,1 @@
+/Users/macbook/Tubes-GDGoC/build/app/intermediates/cxx/Debug/6o334552/obj/arm64-v8a
