@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../controllers/controller.dart';
-import '../widgets/widget.dart';
 import '../controllers/auth/auth_controller.dart';
 import '../routes.dart';
 import 'package:ewallet/models/enum.dart';
+import 'package:ewallet/controllers/transactionController.dart';
+import 'package:ewallet/widgets/widget.dart';
 
 class HomePage extends StatelessWidget {
   final pengeluaranController = Get.put(ControllerPengeluaran());
-  final authController =
-      Get.find<AuthController>(); // Dapatkan instance AuthController
+  final transaksiController = Get.find<TransactionController>();
+  final authController = Get.find<AuthController>();
 
   @override
   Widget build(BuildContext context) {
@@ -47,20 +48,17 @@ class HomePage extends StatelessWidget {
                             fontFamily: 'poppins',
                             fontWeight: FontWeight.w800,
                           )),
-                      // untuk test fitur aja
                       // Tombol Logout/Login
                       Obx(() {
-                        if (authController.authState.value ==
-                            AuthState.Authenticated) {
+                        final authStateValue = authController.authState.value;
+                        if (authStateValue == AuthState.Authenticated) {
                           return IconButton(
                             icon: Icon(Icons.logout, color: Colors.white),
                             onPressed: () {
-                              // Konfirmasi sebelum logout
                               Get.dialog(
                                 AlertDialog(
                                   title: Text('Logout'),
-                                  content:
-                                      Text('Apakah Anda yakin ingin keluar?'),
+                                  content: Text('Apakah Anda yakin ingin keluar?'),
                                   actions: [
                                     TextButton(
                                       onPressed: () => Get.back(),
@@ -68,10 +66,8 @@ class HomePage extends StatelessWidget {
                                     ),
                                     TextButton(
                                       onPressed: () {
-                                        Get.toNamed(
-                                            AppRoutes.home); // Tutup dialog
-                                        authController
-                                            .logout(); // Panggil metode logout
+                                        Get.back(); // Close dialog first
+                                        authController.logout();
                                       },
                                       child: Text('Ya',
                                           style: TextStyle(color: Colors.red)),
@@ -93,96 +89,113 @@ class HomePage extends StatelessWidget {
                     ],
                   ),
                   SizedBox(height: 10),
-                  // Nama user sekarang akan menggunakan data dari AuthController
+                  // Nama user
                   Obx(() {
-                    final userName =
-                        authController.currentUser.value?.displayName;
+                    final user = authController.currentUser.value;
                     return Text(
-                        userName != null
-                            ? 'Welcome $userName!'
-                            : 'Welcome Guest!',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 20,
-                          fontFamily: 'poppins',
-                        ));
+                      user?.displayName != null && user!.displayName!.isNotEmpty
+                          ? 'Welcome ${user.displayName}!'
+                          : 'Welcome Guest!',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 20,
+                        fontFamily: 'poppins',
+                      )
+                    );
                   }),
                   SizedBox(height: 20),
 
                   // BAGIAN CARD PUTIH
                   Container(
-                      width: double.infinity,
-                      padding: EdgeInsets.all(25),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(20),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black12,
-                            blurRadius: 8,
-                            offset: Offset(0, 2),
-                          )
-                        ],
-                      ),
-                      child: Column(
-                        children: [
-                          Material(
-                            shape: RoundedRectangleBorder(
+                    width: double.infinity,
+                    padding: EdgeInsets.all(25),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(20),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black12,
+                          blurRadius: 8,
+                          offset: Offset(0, 2),
+                        )
+                      ],
+                    ),
+                    child: Column(
+                      children: [
+                        Material(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: Container(
+                            padding: EdgeInsets.only(
+                                left: 63, right: 63, top: 5, bottom: 5),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFFE5E5E5),
                               borderRadius: BorderRadius.circular(10),
                             ),
-                            child: Container(
-                              padding: EdgeInsets.only(
-                                  left: 63, right: 63, top: 5, bottom: 5),
-                              decoration: BoxDecoration(
-                                color: const Color(0xFFE5E5E5),
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              child: Column(
-                                children: [
-                                  Text(
-                                    textAlign: TextAlign.start,
-                                    'Pengeluaran Bulan ini',
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontFamily: 'poppins',
-                                    ),
+                            child: Column(
+                              children: [
+                                Text(
+                                  'Pengeluaran Bulan ini',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontFamily: 'poppins',
                                   ),
-                                  SizedBox(height: 4),
-                                  Text(
-                                    'Rp.740.000',
+                                ),
+                                SizedBox(height: 4),
+                                Obx(() {
+                                  final _ = transaksiController.transactions;
+                                  return Text(
+                                    'Rp. ${transaksiController.getMonthlyExpense().toStringAsFixed(0)}',
                                     style: TextStyle(
                                       fontSize: 16,
                                       fontFamily: 'poppins',
                                       fontWeight: FontWeight.bold,
                                     ),
-                                  ),
-                                ],
-                              ),
+                                  );
+                                }),
+                              ],
                             ),
                           ),
-                          SizedBox(height: 12),
-                          ElevatedButton.icon(
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Color(0xFF1455FD),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10),
-                              ),
+                        ),
+                        SizedBox(height: 12),
+                        ElevatedButton.icon(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Color(0xFF1455FD),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
                             ),
-                            onPressed: () {
-                              Get.toNamed('/transaction');
-                            },
-                            label: Text(
-                              'Baru saja melakukan transaksi?',
-                              style: TextStyle(
-                                  fontSize: 14,
-                                  fontFamily: 'poppins',
-                                  color: Colors.white),
-                            ),
-                            icon:
-                                Icon(Icons.add, size: 18, color: Colors.white),
                           ),
-                        ],
-                      )),
+                          onPressed: () {
+                            // Check if user is logged in first
+                            final userId = authController.currentUser.value?.uid;
+                            if (userId == null || userId.isEmpty) {
+                              Get.snackbar(
+                                'Login Diperlukan',
+                                'Anda harus login terlebih dahulu untuk menambahkan transaksi',
+                                snackPosition: SnackPosition.BOTTOM,
+                                backgroundColor: Colors.red,
+                                colorText: Colors.white,
+                                margin: EdgeInsets.all(16),
+                                borderRadius: 10,
+                                duration: Duration(seconds: 3),
+                              );
+                              return;
+                            }
+                            Get.toNamed(AppRoutes.addTransaction);
+                          },
+                          label: Text(
+                            'Baru saja melakukan transaksi?',
+                            style: TextStyle(
+                                fontSize: 14,
+                                fontFamily: 'poppins',
+                                color: Colors.white),
+                          ),
+                          icon: Icon(Icons.add, size: 18, color: Colors.white),
+                        ),
+                      ],
+                    )
+                  ),
 
                   SizedBox(height: 20),
 
@@ -206,30 +219,50 @@ class HomePage extends StatelessWidget {
                   // ICON ICON
                   Obx(() {
                     final items = pengeluaranController.items;
+                    if (items.isEmpty) {
+                      return Center(
+                        child: Text(
+                          'Tidak ada data pengeluaran',
+                          style: TextStyle(
+                            fontFamily: 'poppins',
+                            color: Colors.grey,
+                          ),
+                        ),
+                      );
+                    }
+                    
                     return Column(
                       children: [
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceAround,
-                          children: items
-                              .sublist(0, 3)
-                              .map((item) => Expanded(
-                                    child: PengeluaranItemWidget(item: item),
-                                  ))
-                              .toList(),
+                          children: items.length >= 3
+                              ? items
+                                  .sublist(0, 3)
+                                  .map((item) => Expanded(
+                                        child: PengeluaranItemWidget(item: item),
+                                      ))
+                                  .toList()
+                              : items
+                                  .map((item) => Expanded(
+                                        child: PengeluaranItemWidget(item: item),
+                                      ))
+                                  .toList(),
                         ),
                         SizedBox(height: 20),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceAround,
-                          children: items
-                              .sublist(3)
-                              .map((item) => Expanded(
-                                    child: PengeluaranItemWidget(item: item),
-                                  ))
-                              .toList(),
-                        ),
+                        if (items.length > 3)
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            children: items
+                                .sublist(3, items.length > 6 ? 6 : items.length)
+                                .map((item) => Expanded(
+                                      child: PengeluaranItemWidget(item: item),
+                                    ))
+                                .toList(),
+                          ),
                       ],
                     );
                   }),
+
                   SizedBox(height: 30),
 
                   //KOMENTAR
@@ -245,6 +278,9 @@ class HomePage extends StatelessWidget {
                       ),
                     ],
                   ),
+                  
+                  // Add some padding at the bottom
+                  SizedBox(height: 20),
                 ],
               ),
             ),
@@ -256,11 +292,14 @@ class HomePage extends StatelessWidget {
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: 1,
         onTap: (index) {
-          Get.toNamed(index == 0
-              ? '/settings'
-              : index == 1
-                  ? '/home'
-                  : '/transaction');
+          final routes = [AppRoutes.settings, AppRoutes.home, AppRoutes.transaction];
+          if (Get.currentRoute != routes[index]) {
+            Get.offNamedUntil(
+              routes[index], 
+              (route) => route.settings.name == routes[index],
+              arguments: Get.arguments,
+            );
+          }
         },
         selectedItemColor: Color(0xFF000000),
         unselectedItemColor: const Color(0xFF000000),
