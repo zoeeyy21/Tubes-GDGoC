@@ -175,7 +175,7 @@ class TransaksiPage extends StatelessWidget {
         currentIndex: 2,
         onTap: (index) {
           Get.toNamed(index == 0
-              ? '/settings'
+              ? '/pengaturan'
               : index == 1
                   ? '/home'
                   : '/transaction');

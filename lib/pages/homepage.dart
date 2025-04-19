@@ -167,16 +167,99 @@ class HomePage extends StatelessWidget {
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(10),
                               ),
+                              textStyle: TextStyle(fontFamily: 'poppins', fontWeight: FontWeight.bold),
                             ),
                             onPressed: () {
-                              Get.toNamed('/transaction');
+                              Get.bottomSheet(
+                                Container(
+                                  padding: EdgeInsets.all(16),
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.vertical(
+                                        top: Radius.circular(20)),
+                                  ),
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Text(
+                                        "Jenis Transaksi",
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold),
+                                      ),
+                                      SizedBox(height: 10),
+                                      DropdownButtonFormField<String>(
+                                        decoration: InputDecoration(
+                                          border: OutlineInputBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(10)),
+                                          contentPadding: EdgeInsets.symmetric(
+                                              horizontal: 12, vertical: 8),
+                                        ),
+                                        items: [
+                                          "Makan & Minum",
+                                          "Belanja",
+                                          "Transportasi",
+                                          "Hiburan",
+                                          "Komunikasi",
+                                          "Kesehatan"
+                                        ]
+                                            .map((e) => DropdownMenuItem(
+                                                value: e, child: Text(e)))
+                                            .toList(),
+                                        onChanged: (value) {
+                                        },
+                                      ),
+                                      SizedBox(height: 12),
+                                      TextField(
+                                        decoration: InputDecoration(
+                                          hintText: 'Tulis detail transaksi',
+                                          filled: true,
+                                          fillColor: const Color(0xFFFFFEFE),
+                                          border: OutlineInputBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(10)),
+                                        ),
+                                        maxLines: 2,
+                                      ),
+                                      SizedBox(height: 16),
+                                      ElevatedButton(
+                                        style: ElevatedButton.styleFrom(
+                                          backgroundColor: Color(0xFF1455FD),
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(20),
+                                          ),
+                                        ),
+                                        onPressed: () {
+                                          // TODO: Simpan transaksi ke controller
+                                          Get.back(); // Tutup bottom sheet
+                                        },
+                                        child: SizedBox(
+                                          width: double.infinity,
+                                          child: Center(
+                                            child: Text(
+                                              "Tambah",
+                                              style: TextStyle(
+                                                  fontFamily: 'poppins',
+                                                  fontWeight: FontWeight.bold,
+                                                  color: Colors.white),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                isScrollControlled: true,
+                              );
                             },
                             label: Text(
                               'Baru saja melakukan transaksi?',
                               style: TextStyle(
-                                  fontSize: 14,
-                                  fontFamily: 'poppins',
-                                  color: Colors.white),
+                                fontSize: 14,
+                                fontFamily: 'poppins',
+                                color: Colors.white,
+                              ),
                             ),
                             icon:
                                 Icon(Icons.add, size: 18, color: Colors.white),
@@ -257,7 +340,7 @@ class HomePage extends StatelessWidget {
         currentIndex: 1,
         onTap: (index) {
           Get.toNamed(index == 0
-              ? '/settings'
+              ? '/pengaturan'
               : index == 1
                   ? '/home'
                   : '/transaction');
